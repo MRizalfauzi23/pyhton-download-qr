@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>QR Batch Generator</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Arial;
+        margin: 40px;
+        background: #f6f8fb;
+      }
+      .card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 720px;
+        margin: 0 auto;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+      }
+      h1 {
+        margin-top: 0;
+      }
+      label {
+        display: block;
+        margin-top: 12px;
+      }
+      input[type="text"],
+      input[type="file"],
+      select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+      }
+      button {
+        margin-top: 18px;
+        padding: 10px 16px;
+        border-radius: 8px;
+        border: 0;
+        background: #0b74de;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .note {
+        font-size: 13px;
+        color: #666;
+        margin-top: 8px;
+      }
+      .alert {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 12px;
+  font-size: 14px;
+}
+.alert-icon {
+  font-size: 18px;
+  margin-right: 10px;
+}
+.alert-content {
+  flex: 1;
+}
+.alert.danger {
+  background: #fdecea;
+  color: #b00020;
+}
+.alert.warning {
+  background: #fff4e5;
+  color: #b07d00;
+}
+.alert.success {
+  background: #edf7ed;
+  color: #0a7d2f;
+}
+
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>QR Batch Generator</h1>
+      <p class="note">
+        Upload file Excel (.xls / .xlsx). Script akan baca header pada baris
+        ke-3 (header=2). <strong>pastikan format nya adalah Excel 97-2003 workbook ya ges!!!</strong>
+        kolom harus sesuai: <strong>Nama Peserta</strong>,
+        <strong>QR-Code</strong>, <strong>Kelas</strong>.
+      </p>
+
+     {% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+  {% for cat, msg in messages %}
+    <div class="alert {{ cat }}">
+      <span class="alert-icon">
+        {% if cat == 'danger' %}&#9888;{% elif cat == 'warning' %}&#x26A0;{% else %}&#10003;{% endif %}
+      </span>
+      <div class="alert-content">
+        <strong>
+          {% if cat == 'danger' %}Gagal:{% elif cat == 'warning' %}Perhatian:{% else %}Sukses:{% endif %}
+        </strong>
+        {{ msg }}
+      </div>
+    </div>
+  {% endfor %}
+{% endif %}
+{% endwith %}
+
+
+      <form method="post" enctype="multipart/form-data">
+        <label>File Excel</label>
+        <input type="file" name="excel_file" accept=".xls,.xlsx" required />
+
+        <label>Nama folder output (opsional)</label>
+        <input
+          type="text"
+          name="output_name"
+          placeholder="QR CODE FOLDER"
+        />
+
+        <label>Format kompresi</label>
+        <select name="compress">
+          <option value="zip" selected>ZIP (direkomendasikan)</option>
+          <option value="rar">
+            RAR {% if not rar_available %}(tidak tersedia di server){% endif %}
+          </option>
+        </select>
+
+        <button type="submit">Generate & Download</button>
+      </form>
+    </div>
+  </body>
+</html>
